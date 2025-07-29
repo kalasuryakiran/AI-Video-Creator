@@ -32,7 +32,7 @@ This guide will help you deploy your AI Video Creator application to Netlify.
 5. Configure build settings:
    - **Branch to deploy**: `main`
    - **Build command**: Leave empty (Netlify will use the command from netlify.toml)
-   - **Publish directory**: `dist`
+   - **Publish directory**: `dist/public`
 
 ### Step 3: Set Environment Variables
 
