@@ -64,8 +64,8 @@ Preferred communication style: Simple, everyday language.
 ## External Dependencies
 
 ### AI Services
-- **OpenAI API**: GPT-4o model for script generation with JSON response formatting
-- **API Key**: Configured via environment variables (OPENAI_API_KEY)
+- **Google Gemini AI**: Gemini-2.5-pro model for script generation with JSON response formatting
+- **API Key**: Configured via environment variables (GEMINI_API_KEY)
 
 ### Database
 - **PostgreSQL**: Primary database (via Neon serverless)
@@ -99,8 +99,15 @@ Preferred communication style: Simple, everyday language.
 
 ### Key Environment Variables
 - `DATABASE_URL`: PostgreSQL connection string
-- `OPENAI_API_KEY`: OpenAI API authentication
+- `GEMINI_API_KEY`: Google Gemini AI API authentication
 - `NODE_ENV`: Environment mode (development/production)
+
+### Netlify Deployment
+- **Build Command**: `./build-netlify.sh`
+- **Publish Directory**: `dist`
+- **Functions Directory**: `netlify/functions`
+- **Serverless Function**: `/api/generate-script` endpoint deployed as Netlify function
+- **Environment Variables**: GEMINI_API_KEY must be configured in Netlify dashboard
 
 ### Scaling Considerations
 - **Storage**: Currently uses in-memory storage, can be switched to database persistence
