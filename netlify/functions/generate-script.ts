@@ -60,9 +60,18 @@ interface VideoScriptContent {
   };
 }
 
-// Initialize Gemini client - will be created on each request to avoid cold start issues
-function createGeminiClient() {
-  return new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+// Initialize Gemini client once per function instance to be reused across invocations.
+let geminiClient: GoogleGenAI | null = null;
+
+function getGeminiClient(): GoogleGenAI {
+  if (!process.env.GEMINI_API_KEY) {
+    // This will be caught and handled in the handler, but it's a safeguard.
+    throw new Error("Gemini API key not configured.");
+  }
+  if (!geminiClient) {
+    geminiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  }
+  return geminiClient;
 }
 
 export const handler: Handler = async (event, context) => {
@@ -171,8 +180,8 @@ export const handler: Handler = async (event, context) => {
 
 async function generateVideoScript(request: any): Promise<VideoScriptContent> {
   try {
-    console.log("Creating Gemini client...");
-    const ai = createGeminiClient();
+    console.log("Getting Gemini client...");
+    const ai = getGeminiClient();
     
     const prompt = `You are an expert YouTube video script writer and content strategist. Generate a complete video script package for the following topic: "${request.topic}"
 

@@ -1,19 +1,14 @@
 [build]
-  publish = "dist/public"
-  command = "vite build && mkdir -p netlify/functions && npx esbuild netlify/functions/generate-script.ts --bundle --platform=node --outfile=netlify/functions/generate-script.js --external:@google/genai && npx esbuild netlify/functions/debug.ts --bundle --platform=node --outfile=netlify/functions/debug.js"
+  # This command is run to build the project.
+  command = "./build-netlify.sh"
 
-[functions]
-  directory = "netlify/functions"
+  # This is the directory that Netlify will deploy.
+  publish = "dist/public"
+
+  # This is the directory where Netlify Functions are stored.
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-[build.environment]
-  NODE_VERSION = "18"
