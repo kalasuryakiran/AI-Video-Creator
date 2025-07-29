@@ -31,7 +31,7 @@ This guide will help you deploy your AI Video Creator application to Netlify.
 4. Select your repository
 5. Configure build settings:
    - **Branch to deploy**: `main`
-   - **Build command**: `./build-netlify.sh`
+   - **Build command**: Leave empty (Netlify will use the command from netlify.toml)
    - **Publish directory**: `dist`
 
 ### Step 3: Set Environment Variables

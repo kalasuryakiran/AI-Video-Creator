@@ -1,0 +1,59 @@
+10:56:56 AM: Failed during stage 'building site': Build script returned non-zero exit code: 2 (https://ntl.fyi/exit-code-2)
+10:56:55 AM: Netlify Build                                                 
+10:56:55 AM: ────────────────────────────────────────────────────────────────
+10:56:55 AM: ​
+10:56:55 AM: ❯ Version
+10:56:55 AM:   @netlify/build 34.3.0
+10:56:55 AM: ​
+10:56:55 AM: ❯ Flags
+10:56:55 AM:   accountId: 685f6d69f9c1d6dae8d76a60
+10:56:55 AM:   baseRelDir: true
+10:56:55 AM:   buildId: 68885b8a14ada1257dd33d84
+10:56:55 AM:   deployId: 68885b8a14ada1257dd33d86
+10:56:55 AM: ​
+10:56:55 AM: ❯ Current directory
+10:56:55 AM:   /opt/build/repo
+10:56:55 AM: ​
+10:56:55 AM: ❯ Config file
+10:56:55 AM:   /opt/build/repo/netlify.toml
+10:56:55 AM: ​
+10:56:55 AM: ❯ Context
+10:56:55 AM:   production
+10:56:55 AM: ​
+10:56:55 AM: build.command from netlify.toml                               
+10:56:55 AM: ────────────────────────────────────────────────────────────────
+10:56:55 AM: ​
+10:56:55 AM: $ ./build-netlify.sh
+10:56:55 AM: bash: line 1: ./build-netlify.sh: Permission denied
+10:56:55 AM: ​
+10:56:55 AM: "build.command" failed                                        
+10:56:55 AM: ────────────────────────────────────────────────────────────────
+10:56:55 AM: ​
+10:56:55 AM:   Error message
+10:56:55 AM:   Command failed with exit code 126: ./build-netlify.sh (https://ntl.fyi/exit-code-126)
+10:56:55 AM: ​
+10:56:55 AM:   Error location
+10:56:55 AM:   In build.command from netlify.toml:
+10:56:55 AM:   ./build-netlify.sh
+10:56:55 AM: ​
+10:56:55 AM:   Resolved config
+10:56:55 AM:   build:
+10:56:55 AM:     command: ./build-netlify.sh
+10:56:55 AM:     commandOrigin: config
+10:56:55 AM:     environment:
+10:56:55 AM:       - GEMINI_API_KEY
+10:56:55 AM:       - NODE_VERSION
+10:56:55 AM:     publish: /opt/build/repo/dist
+10:56:55 AM:     publishOrigin: config
+10:56:55 AM:   functionsDirectory: /opt/build/repo/netlify/functions
+10:56:55 AM:   redirects:
+10:56:56 AM:     - from: /api/*
+      status: 200
+      to: /.netlify/functions/:splat
+    - from: /*
+      status: 200
+      to: /index.html
+  redirectsOrigin: config
+10:56:56 AM: Build failed due to a user error: Build script returned non-zero exit code: 2
+10:56:56 AM: Failing build: Failed to build site
+10:56:56 AM: Finished processing build request in 20.963s
