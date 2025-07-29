@@ -1,6 +1,6 @@
 [build]
   publish = "dist/public"
-  command = "vite build && mkdir -p netlify/functions && npx esbuild netlify/functions/generate-script.ts --bundle --platform=node --outfile=netlify/functions/generate-script.js --external:@google/genai"
+  command = "vite build && mkdir -p netlify/functions && npx esbuild netlify/functions/generate-script.ts --bundle --platform=node --outfile=netlify/functions/generate-script.js --external:@google/genai && npx esbuild netlify/functions/debug.ts --bundle --platform=node --outfile=netlify/functions/debug.js"
 
 [functions]
   directory = "netlify/functions"

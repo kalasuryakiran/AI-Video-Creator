@@ -1,10 +1,69 @@
 import { Handler } from '@netlify/functions';
 import { GoogleGenAI } from "@google/genai";
-import { generateScriptRequestSchema, type VideoScriptContent } from "../../shared/schema";
 import { z } from "zod";
 
-// This API key is from Gemini Developer API Key, not vertex AI API Key
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+// Define schemas inline since bundling might have issues with shared imports
+const generateScriptRequestSchema = z.object({
+  topic: z.string().min(1, "Topic is required"),
+  videoLength: z.string().default("1-2 minutes"),
+  contentStyle: z.string().default("Educational"),
+  targetAudience: z.string().optional(),
+});
+
+interface VideoScriptContent {
+  title: string;
+  script: {
+    hook: string;
+    introduction: string;
+    mainContent: string;
+    callToAction: string;
+  };
+  scenes: Array<{
+    id: number;
+    title: string;
+    timing: string;
+    description: string;
+    tags: string[];
+  }>;
+  voiceover: {
+    characteristics: {
+      tone: string;
+      pace: string;
+      style: string;
+      enunciation: string;
+    };
+    technical: {
+      audioFormat: string;
+      noiseReduction: boolean;
+      normalization: string;
+      pauses: string;
+    };
+    elevenLabsSettings: {
+      voiceStyle: string;
+      stability: number;
+      clarity: number;
+      exaggeration: number;
+    };
+  };
+  music: {
+    mood: string;
+    description: string;
+    bpm: string;
+    genre: string;
+    audioLevels: {
+      backgroundMusic: string;
+      voiceover: string;
+      soundEffects: string;
+      ducking: boolean;
+    };
+    suggestedTracks: string[];
+  };
+}
+
+// Initialize Gemini client - will be created on each request to avoid cold start issues
+function createGeminiClient() {
+  return new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+}
 
 export const handler: Handler = async (event, context) => {
   // Handle CORS
@@ -31,6 +90,18 @@ export const handler: Handler = async (event, context) => {
   }
 
   try {
+    // Check if API key is available
+    if (!process.env.GEMINI_API_KEY) {
+      console.error("GEMINI_API_KEY environment variable is not set");
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ 
+          message: "Gemini API key not configured. Please set GEMINI_API_KEY in Netlify environment variables." 
+        }),
+      };
+    }
+
     if (!event.body) {
       return {
         statusCode: 400,
@@ -39,10 +110,14 @@ export const handler: Handler = async (event, context) => {
       };
     }
 
+    console.log("Parsing request body...");
     const data = generateScriptRequestSchema.parse(JSON.parse(event.body));
+    console.log("Request data:", { topic: data.topic, videoLength: data.videoLength, contentStyle: data.contentStyle });
 
     // Generate script using Gemini
+    console.log("Calling generateVideoScript...");
     const generatedContent = await generateVideoScript(data);
+    console.log("Script generated successfully");
 
     return {
       statusCode: 200,
@@ -54,6 +129,11 @@ export const handler: Handler = async (event, context) => {
     };
   } catch (error) {
     console.error("Error generating script:", error);
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace',
+      type: typeof error,
+    });
     
     if (error instanceof z.ZodError) {
       return {
@@ -71,16 +151,19 @@ export const handler: Handler = async (event, context) => {
         statusCode: 401,
         headers,
         body: JSON.stringify({ 
-          message: "Gemini API key not configured. Please check your environment variables." 
+          message: "Gemini API key not configured or invalid. Please check your API key." 
         }),
       };
     }
     
+    // Return more detailed error for debugging
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({ 
-        message: "Failed to generate video script. Please try again." 
+        message: "Failed to generate video script. Please try again.",
+        error: error instanceof Error ? error.message : 'Unknown error',
+        debug: process.env.NODE_ENV === 'development' ? error : undefined
       }),
     };
   }
@@ -88,6 +171,9 @@ export const handler: Handler = async (event, context) => {
 
 async function generateVideoScript(request: any): Promise<VideoScriptContent> {
   try {
+    console.log("Creating Gemini client...");
+    const ai = createGeminiClient();
+    
     const prompt = `You are an expert YouTube video script writer and content strategist. Generate a complete video script package for the following topic: "${request.topic}"
 
 Requirements:
